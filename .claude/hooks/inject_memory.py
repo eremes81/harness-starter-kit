@@ -41,16 +41,18 @@ MANIFEST_PATH = REPO_ROOT / "memory" / "_jit_manifest.json"
 LOG_PATH = REPO_ROOT / "memory" / "_injection_log.txt"
 GUARD_PATH = REPO_ROOT / "memory" / "_guard.json"
 
-# 비용 가드(책 "비용 가드"): 매 호출에 자동으로 붙는 컨텍스트에 천장을 씌운다.
-#   - MAX_MATCHES: 한 번에 주입할 최대 메모리 개수(개수 상한)
-#   - MAX_BODY:    메모리 한 개당 최대 주입 길이(길이 상한)
-# memory/_guard.json 이 있으면 그 값으로 덮어쓴다(없으면 아래 기본값).
-MAX_MATCHES = 5
+# 비용 가드(책 8장 "비용 가드"): 매 호출에 자동으로 붙는 컨텍스트에 천장을 씌운다.
+#   - max_matches:   한 번에 주입할 최대 메모리 개수(가드 A, 개수 상한)
+#   - max_atom_body: 메모리 한 개당 최대 주입 길이(가드 B, 길이 상한)
+# 기본값은 책 본문에 실린 값과 같다(3개 · 6000자).
+# memory/_guard.json 이 있으면 그 값으로 덮어쓴다.
+MAX_MATCHES = 3
 MAX_BODY = 6000
 try:
     _g = json.loads(GUARD_PATH.read_text(encoding="utf-8"))
-    MAX_MATCHES = int(_g.get("max_items", MAX_MATCHES))
-    MAX_BODY = int(_g.get("max_chars", MAX_BODY))
+    # 정식 키는 max_matches/max_atom_body. 예전 이름(max_items/max_chars)도 함께 받는다.
+    MAX_MATCHES = int(_g.get("max_matches", _g.get("max_items", MAX_MATCHES)))
+    MAX_BODY = int(_g.get("max_atom_body", _g.get("max_chars", MAX_BODY)))
 except Exception:
     pass
 
