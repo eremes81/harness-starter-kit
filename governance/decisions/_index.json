@@ -1,0 +1,15 @@
+{
+  "generated": "2026-07-01",
+  "count": 1,
+  "by_status": {
+    "active": 1
+  },
+  "cards": [
+    {
+      "decision_id": "D2026_Q3_001",
+      "status": "active",
+      "created": "2026-07-01",
+      "file": "D2026_Q3_001.yaml"
+    }
+  ]
+}

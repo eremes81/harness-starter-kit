@@ -1,0 +1,22 @@
+{
+  "_note": "1M(100만) 토큰당 USD. 공식 가격 페이지에서 직접 채울 것. 시점에 따라 변동.",
+  "_source_url": "",
+  "_as_of": "",
+  "models": {
+    "opus": {
+      "in": null,
+      "out": null,
+      "cached_in": null
+    },
+    "sonnet": {
+      "in": null,
+      "out": null,
+      "cached_in": null
+    },
+    "haiku": {
+      "in": null,
+      "out": null,
+      "cached_in": null
+    }
+  }
+}

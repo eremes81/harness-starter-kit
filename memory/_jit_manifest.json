@@ -1,0 +1,60 @@
+{
+  "atoms": [
+    {
+      "name": "팀-커밋은-이름표부터",
+      "scope": "team",
+      "title": "팀 커밋 메시지는 [이름]으로 시작한다",
+      "regex": "(커밋|commit|저장|반영|푸시)",
+      "path": "team_memory/atoms/rules/커밋은-이름표부터.md",
+      "score": 30
+    },
+    {
+      "name": "팀-공유규칙은-합의후에만",
+      "scope": "team",
+      "title": "shared/ 공통 규칙은 회고 합의 후에만 바꾼다",
+      "regex": "(공유|shared|팀\\ 규칙|합의|컨벤션)",
+      "path": "team_memory/atoms/decisions/공유규칙은-합의후에만.md",
+      "score": 28
+    },
+    {
+      "name": "검증게이트-제출전점검",
+      "scope": "personal",
+      "title": "AI 산출물을 결정·보고·제출에 반영하기 전 3중 게이트",
+      "regex": "(제출|보고|결정|검증|최종|배포|공유|확정)",
+      "path": "memory/rules/검증게이트-제출전점검.md",
+      "score": 25
+    },
+    {
+      "name": "보고서는-목차부터",
+      "scope": "personal",
+      "title": "보고서·문서 작성은 본문보다 목차(구조)를 먼저 합의한다",
+      "regex": "(보고서|기획서|문서|제안서|작성|초안)",
+      "path": "memory/rules/보고서는-목차부터.md",
+      "score": 20
+    },
+    {
+      "name": "장황한설명-금지",
+      "scope": "personal",
+      "title": "결과를 먼저, 설명은 짧게 — 변경 요약 표면 충분",
+      "regex": "(요약|정리|설명|간단히|핵심)",
+      "path": "memory/feedback/장황한설명-금지.md",
+      "score": 15
+    },
+    {
+      "name": "주간회고-금요일오후",
+      "scope": "personal",
+      "title": "주간 회고는 매주 금요일 오후에 고정한다",
+      "regex": "(회고|주간|돌아보기|한\\ 주|정리)",
+      "path": "memory/decisions/주간회고-금요일오후.md",
+      "score": 12
+    },
+    {
+      "name": "용어-베이스라인",
+      "scope": "personal",
+      "title": "베이스라인 — 도입 전에 잰 기준값 (없으면 \"줄었다\"를 말할 수 없다)",
+      "regex": "(베이스라인|기준값|측정|절감|효과|몇\\ 배)",
+      "path": "memory/concepts/용어-베이스라인.md",
+      "score": 10
+    }
+  ]
+}
