@@ -298,10 +298,7 @@ def check_stdlib_only() -> None:
         for m in list(ext):
             # try: 블록 안의 선택적 import(PyYAML 등)는 없어도 동작하므로 허용
             if m in OPTIONAL_IF_GUARDED and re.search(
-                    r"try:\s*
-(?:[^
-]*
-){0,3}?\s*import " + re.escape(m) + r"", text):
+                    r"try:\s*\n(?:[^\n]*\n){0,3}?\s*import " + re.escape(m) + r"\b", text):
                 ext.discard(m)
         if ext:
             offenders.append(f"{rel(p)}: {sorted(ext)}")
