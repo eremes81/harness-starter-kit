@@ -1,11 +1,12 @@
 # 하네스 스타터 키트 (Harness Starter Kit)
 
-> 책 부록. **받아서 폴더째 Claude Code 로 열면 바로 도는** 최소 하네스입니다.
+> 책 부록. **받아서 폴더째 AI 코딩 에이전트로 열면 바로 도는** 최소 하네스입니다.
+> Claude Code 기준으로 설명하지만, **OpenAI Codex · Gemini CLI · Grok Build 에서도 같은 폴더가 그대로 돕니다**(§6).
 > 챗봇을 "그때그때 쓰는" 단계에서, **내 규칙을 기억하고 자동으로 적용하는 동료**로
 > 바꾸는 가장 작은 뼈대입니다.
 
 이 키트가 하는 일 한 줄: **내가 말을 걸 때마다, 지금 대화에 관련된 내 규칙·결정·피드백을
-자동으로 찾아 Claude 에게 먼저 알려 줍니다.**
+자동으로 찾아 AI 에게 먼저 알려 줍니다.**
 
 ---
 
@@ -13,8 +14,8 @@
 
 | 준비물 | 이유 | 확인 방법 |
 |--------|------|-----------|
-| **Claude Code** (데스크톱 앱) | 이 폴더를 여는 도구 | 앱 실행 → 이 폴더 열기 |
-| **Python 3** | 훅과 스크립트가 파이썬 | Claude 에게 "파이썬 설치돼 있어?"라고 물어보세요 |
+| **AI 코딩 에이전트** — Claude Code(기본), 또는 OpenAI Codex · Gemini CLI · Grok Build | 이 폴더를 여는 도구 | 앱 실행 → 이 폴더 열기 (Claude Code 외 도구는 §6) |
+| **Python 3** (3.8 이상) | 훅과 스크립트가 파이썬 | AI 에게 "파이썬 설치돼 있어?"라고 물어보세요 |
 
 > Python 이 없다면, Claude Code 에게 "파이썬 설치를 도와줘"라고 하면 안내해 줍니다.
 > (Windows 는 [python.org] 설치 시 "Add to PATH" 체크가 핵심입니다.)
@@ -44,6 +45,9 @@ Claude 가 "금요일 오후에 `retro/weekly/` 에 남기기로 했었죠"를 *
 
 > 안 되면: Claude 에게 "매니페스트 다시 만들어줘"라고 한 뒤 다시 시도하세요.
 > (내부적으로 `python scripts/build_manifest.py` 를 실행합니다.)
+>
+> 더 꼼꼼히 보려면 **"키트 자체검사 돌려줘"** → `python scripts/kit_selfcheck.py`.
+> 문법·설정·훅 실동작(4개 에이전트 규약)·공개 게이트까지 9가지를 한 번에 검사하고 ✅/❌ 로 보여 줍니다.
 
 ---
 
@@ -71,12 +75,15 @@ Claude 에게 "CLAUDE.md 를 내 상황에 맞게 채워줘"라고 해도 됩니
 ```
 harness-starter-kit/
 ├─ README.md               ← (이 파일)
-├─ CLAUDE.md               ← 세션 시작 시 Claude 가 자동으로 읽는 가이드
+├─ CLAUDE.md               ← 세션 시작 시 AI 가 자동으로 읽는 가이드 (원본)
+├─ AGENTS.md · GEMINI.md   ← CLAUDE.md 의 자동 사본 (Codex·Grok / Gemini 가 읽음, 직접 수정 X)
 ├─ .claude/
-│  ├─ settings.json        ← 폴더를 열면 훅을 켜는 설정
+│  ├─ settings.json        ← 폴더를 열면 훅을 켜는 설정 (Claude Code · Grok Build)
 │  └─ hooks/
-│     ├─ inject_memory.py  ← 관련 메모리를 자동 주입하는 훅 (핵심 엔진)
+│     ├─ inject_memory.py  ← 관련 메모리를 자동 주입하는 훅 (핵심 엔진, 네 에이전트 공용)
 │     └─ retro_check.py    ← 세션 시작 시 회고가 밀렸으면 알림 (루프 엔지니어링)
+├─ .codex/hooks.json       ← 같은 훅을 OpenAI Codex 에 연결
+├─ .gemini/settings.json   ← 같은 훅을 Gemini CLI 에 연결
 ├─ memory/                 ← 내 규칙·결정·피드백·개념
 │  ├─ rules/ decisions/ feedback/ concepts/
 │  └─ _jit_manifest.json   ← 훅이 읽는 색인 (자동 생성물)
@@ -91,7 +98,9 @@ harness-starter-kit/
 │  ├─ build_manifest.py    ← 메모리를 스캔해 색인 재생성 (개인+팀)
 │  ├─ new_memory.py        ← 새 메모리 한 장 생성
 │  ├─ price_check.py       ← 호출 비용 계산 (비용 가드)
-│  └─ decision_track.py    ← 결정 카드 박제·영향 역추적
+│  ├─ decision_track.py    ← 결정 카드 박제·영향 역추적
+│  ├─ sync_agent_docs.py   ← CLAUDE.md → AGENTS.md·GEMINI.md 사본 동기화 (자동 호출)
+│  └─ kit_selfcheck.py     ← 무결성·이식성 자체검사 9종 (받은 그대로 도는가?)
 └─ retro/                  ← 일간·주간 회고 (루프의 연료)
 ```
 
@@ -111,7 +120,31 @@ harness-starter-kit/
 
 ---
 
-## 라이선스 / 안전
+## 6. 다른 AI 에이전트에서 쓰기 (Codex · Gemini CLI · Grok Build)
+
+훅 엔진(`.claude/hooks/*.py`)은 **한 벌**입니다. 네 도구가 모두 "프롬프트를 JSON 으로 stdin 에 주고,
+stdout 의 `hookSpecificOutput.additionalContext` 를 컨텍스트로 붙인다"는 **같은 규약**을 쓰기 때문에,
+도구별로는 **연결 설정 파일과 지침 파일 이름만** 다릅니다. 폴더를 그대로 열면 됩니다.
+
+| 도구 | 읽는 지침 파일 | 훅 연결 설정 | 처음 한 번 할 일 |
+|---|---|---|---|
+| **Claude Code** | `CLAUDE.md` | `.claude/settings.json` | 폴더 열기 → 끝 |
+| **OpenAI Codex** (CLI·앱) | `AGENTS.md` | `.codex/hooks.json` | 키트 루트에서 `codex` 실행 → "이 프로젝트의 훅을 신뢰할까요?" 에 승인 |
+| **Gemini CLI** | `GEMINI.md` | `.gemini/settings.json` (이벤트 이름만 `BeforeAgent`) | 키트 루트에서 `gemini` 실행 |
+| **Grok Build** (xAI) | `AGENTS.md` | **`.claude/settings.json` 을 그대로 읽음**(공식 호환) | `grok` 실행 → `/hooks-trust` 로 프로젝트 훅 승인 |
+| Cursor 등 `AGENTS.md` 를 읽는 도구 | `AGENTS.md` | (훅은 도구별 설정 필요) | 지침만 자동 적용, 메모리 주입은 수동 |
+
+- `AGENTS.md` · `GEMINI.md` 는 `CLAUDE.md` 의 **자동 사본**입니다. 고칠 때는 `CLAUDE.md` 만 고치고
+  "매니페스트 다시 만들어줘"(= `python scripts/build_manifest.py`)를 실행하면 사본이 따라옵니다.
+- 훅 명령은 `python` 을 먼저 시도하고 없으면 `python3` 로 다시 시도합니다(macOS/Linux 대비).
+- Codex 는 세션을 연 폴더 기준으로 훅 명령을 실행하므로, **키트 루트에서** 여세요.
+- 동작 확인은 어느 도구든 같습니다: "이번 주 회고 좀 도와줄래?" → 금요일 오후 규칙이 먼저 떠오르면 성공.
+- 검증 실측(2026-09-05): 네 도구의 공식 문서 규약대로 만든 입력 4종을 `kit_selfcheck.py` 가 실제 훅에 넣어 확인합니다.
+  Claude Code 는 저자 실운영 환경, 나머지 셋은 규약 기준 검증입니다 — 도구 쪽 규약이 바뀌면 이 표를 고쳐 주세요.
+
+---
+
+## 5. 왜 이렇게 만들었나 (원리)
 
 - 이 키트의 코드·문서는 **MIT 라이선스**입니다(`LICENSE` 파일 참조). 자유롭게 쓰고 고치고 나눠 쓰세요.
 - 예시 내용은 자유롭게 고쳐 쓰세요.

@@ -1,0 +1,32 @@
+{
+  "//": "OpenAI Codex(CLI·앱) 용 훅 설정. 이 폴더(키트 루트)에서 codex 를 실행하면 읽힙니다. 처음 한 번 '이 프로젝트의 훅을 신뢰할지' 묻는 확인이 뜹니다 — 승인하면 켜집니다.",
+  "//paths": "Codex 는 세션을 연 폴더 기준으로 명령을 실행합니다. 반드시 키트 루트에서 여세요. 지침 파일은 AGENTS.md(= CLAUDE.md 의 자동 사본)입니다.",
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/hooks/inject_memory.py",
+            "commandWindows": "python .claude/hooks/inject_memory.py",
+            "timeout": 30,
+            "statusMessage": "관련 메모리 주입 중"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/hooks/retro_check.py",
+            "commandWindows": "python .claude/hooks/retro_check.py",
+            "timeout": 30,
+            "statusMessage": "회고 밀림 점검"
+          }
+        ]
+      }
+    ]
+  }
+}

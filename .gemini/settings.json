@@ -1,0 +1,33 @@
+{
+  "//": "Gemini CLI 용 프로젝트 설정. 이 폴더에서 gemini 를 실행하면 읽힙니다. 지침 파일은 GEMINI.md(= CLAUDE.md 의 자동 사본). 프롬프트 훅 이벤트 이름만 다릅니다(BeforeAgent).",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "name": "retro_check",
+            "type": "command",
+            "command": "python .claude/hooks/retro_check.py || python3 .claude/hooks/retro_check.py",
+            "timeout": 30000,
+            "description": "회고가 밀렸으면 세션 시작 시 알림"
+          }
+        ]
+      }
+    ],
+    "BeforeAgent": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "name": "inject_memory",
+            "type": "command",
+            "command": "python .claude/hooks/inject_memory.py || python3 .claude/hooks/inject_memory.py",
+            "timeout": 30000,
+            "description": "프롬프트와 관련된 메모리를 자동 주입"
+          }
+        ]
+      }
+    ]
+  }
+}

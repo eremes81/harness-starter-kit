@@ -1,3 +1,8 @@
+<!-- ⚠ 자동 생성 사본입니다. 원본은 CLAUDE.md 입니다.
+     이 파일은 Gemini CLI 가 세션 시작 때 자동으로 읽습니다.
+     고치려면 CLAUDE.md 를 고친 뒤  python scripts/build_manifest.py  를 실행하세요.
+     (scripts/sync_agent_docs.py 가 다시 복사합니다. 여기를 직접 고치면 다음 동기화 때 사라집니다.) -->
+
 # 내 하네스 — AI 에이전트 세션 가이드
 
 > 이 파일은 AI 코딩 에이전트가 **세션을 시작할 때 자동으로 읽습니다.**

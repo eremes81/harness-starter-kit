@@ -1,5 +1,6 @@
 {
-  "//": "이 폴더를 Claude Code 로 열면 자동 적용되는 설정입니다. 핵심은 UserPromptSubmit 훅 하나입니다.",
+  "//": "이 폴더를 Claude Code 로 열면 자동 적용되는 설정입니다. 핵심은 UserPromptSubmit 훅 하나입니다. (Grok Build 도 이 파일을 그대로 읽습니다.)",
+  "//python": "명령은 python 을 먼저 시도하고, 없으면(macOS/Linux) python3 로 다시 시도합니다.",
   "permissions": {
     "allow": [
       "Bash(python:*)",
@@ -12,7 +13,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python .claude/hooks/inject_memory.py"
+            "command": "python .claude/hooks/inject_memory.py || python3 .claude/hooks/inject_memory.py"
           }
         ]
       }
@@ -22,7 +23,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python .claude/hooks/retro_check.py"
+            "command": "python .claude/hooks/retro_check.py || python3 .claude/hooks/retro_check.py"
           }
         ]
       }

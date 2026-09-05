@@ -206,6 +206,16 @@ def update_doc(doc: Path, block: str) -> int:
         return 0
     doc.write_text(new_text, encoding="utf-8")
     print(f"[완료] 재발 방지 블록 갱신: {doc}")
+    if doc.resolve() == DEFAULT_DOC.resolve():
+        # CLAUDE.md 가 바뀌면 AGENTS.md · GEMINI.md 사본도 같이 맞춘다(에이전트 공용 키트).
+        try:
+            sys.path.insert(0, str(REPO_ROOT / "scripts"))
+            from sync_agent_docs import sync  # type: ignore
+            stale = sync()
+            if stale:
+                print(f"[완료] 지침 사본 갱신: {', '.join(stale)}")
+        except Exception as e:  # noqa: BLE001
+            print(f"[주의] 지침 사본 동기화 실패: {e}")
     return 0
 
 

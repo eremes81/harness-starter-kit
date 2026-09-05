@@ -106,6 +106,21 @@ def main() -> None:
         print(f"   - {a['score']:>3} {tag} {a['name']}  {a['regex']}")
 
     update_hot_block(atoms)
+    sync_mirror_docs()
+
+
+def sync_mirror_docs() -> None:
+    """CLAUDE.md 를 AGENTS.md(Codex·Grok 등) · GEMINI.md(Gemini CLI) 로 복사한다.
+    지침 파일 이름만 다를 뿐 내용은 하나여야 하므로, 여기서 항상 같이 갱신한다."""
+    try:
+        import sys
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        from sync_agent_docs import sync
+        stale = sync()
+        if stale:
+            print(f"[완료] 지침 사본 갱신: {', '.join(stale)} (원본 = CLAUDE.md)")
+    except Exception as e:  # 사본 동기화 실패가 매니페스트 생성을 막지는 않는다
+        print(f"[주의] 지침 사본 동기화 실패: {e} → python scripts/sync_agent_docs.py")
 
 
 def update_hot_block(atoms: list) -> None:

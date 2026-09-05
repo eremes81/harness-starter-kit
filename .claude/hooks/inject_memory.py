@@ -1,7 +1,15 @@
 #!/usr/bin/env python3
 # ============================================================================
-#  inject_memory.py  —  UserPromptSubmit 훅: JIT(Just-In-Time) 메모리 주입
+#  inject_memory.py  —  프롬프트 훅: JIT(Just-In-Time) 메모리 주입
 # ----------------------------------------------------------------------------
+#  어디서 도나 (같은 파일 하나로 네 곳 다 동작):
+#    - Claude Code   : UserPromptSubmit  (.claude/settings.json)
+#    - OpenAI Codex  : UserPromptSubmit  (.codex/hooks.json)
+#    - Gemini CLI    : BeforeAgent       (.gemini/settings.json)
+#    - Grok Build    : UserPromptSubmit  (.claude/settings.json 을 그대로 읽음)
+#    네 도구 모두 stdin 으로 JSON 을 주고, stdout 의
+#    hookSpecificOutput.additionalContext 를 컨텍스트로 붙이는 같은 규약을 쓴다.
+#
 #  무엇을 하나:
 #    - 사용자가 보낸 프롬프트를 읽는다.
 #    - memory/_jit_manifest.json 에 등록된 각 메모리(atom)의 키워드 정규식과
@@ -73,18 +81,37 @@ def safe_log(hits: list[str], prompt: str) -> None:
 
 
 def main() -> None:
-    # 1) Claude Code 가 stdin 으로 넘긴 JSON 페이로드를 읽는다.
+    # 1) 에이전트가 stdin 으로 넘긴 JSON 페이로드를 읽는다.
+    #    ⚠ 반드시 바이트로 읽어 UTF-8 로 해석한다. sys.stdin.read() 는 Windows 에서
+    #      콘솔 기본 인코딩(cp949 등)으로 풀기 때문에, 한글 프롬프트가 깨져
+    #      키워드 매칭이 조용히 실패한다(실측: 2026-09-05, Python 3.10/Windows).
     try:
-        raw = sys.stdin.read()
+        raw = sys.stdin.buffer.read().decode("utf-8", errors="replace")
         if not raw.strip():
             return emit_empty()
         payload = json.loads(raw)
     except Exception:
         return emit_empty()
+    if not isinstance(payload, dict):
+        return emit_empty()
 
-    prompt = payload.get("prompt", "") if isinstance(payload, dict) else ""
+    # 도구마다 필드 이름이 조금씩 다를 수 있어 넓게 받는다.
+    #   Claude Code / Codex / Gemini CLI = "prompt"
+    prompt = ""
+    for key in ("prompt", "user_prompt", "userPrompt", "message"):
+        val = payload.get(key)
+        if isinstance(val, str) and val.strip():
+            prompt = val
+            break
     if not prompt:
         return emit_empty()
+
+    # 들어온 이벤트 이름을 그대로 돌려준다(Gemini CLI 는 BeforeAgent, 나머지는 UserPromptSubmit).
+    event_name = (
+        payload.get("hook_event_name")
+        or payload.get("hookEventName")
+        or "UserPromptSubmit"
+    )
 
     # 2) 매니페스트(등록된 메모리 목록)를 읽는다.
     try:
@@ -130,14 +157,16 @@ def main() -> None:
 
     safe_log(hits, prompt)
 
-    # 5) Claude Code 규약대로 additionalContext 로 돌려준다.
+    # 5) 공통 규약대로 additionalContext 로 돌려준다.
+    #    (stdout 에는 이 JSON 외에 아무것도 찍지 않는다 — 로그는 파일로만.)
     output = {
         "hookSpecificOutput": {
-            "hookEventName": "UserPromptSubmit",
+            "hookEventName": event_name,
             "additionalContext": "".join(chunks),
         }
     }
     sys.stdout.write(json.dumps(output, ensure_ascii=False))
+    sys.stdout.flush()
     sys.exit(0)
 
 

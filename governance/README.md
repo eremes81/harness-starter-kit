@@ -8,7 +8,7 @@
 
 AI 비용은 대부분 "매 호출에 자동으로 붙는 컨텍스트"에서 샙니다. 두 장치로 막습니다.
 
-- **컨텍스트 천장** — `memory/_guard.json` 의 `max_items`·`max_chars`.
+- **컨텍스트 천장** — `memory/_guard.json` 의 `max_matches`(개수)·`max_atom_body`(글자 수). 기본값 3개·6000자.
   주입 훅(`inject_memory.py`)이 이 값으로 **개수·길이 상한**을 강제합니다. 늘리면 정확도↑ 비용↑.
 - **비용 계산기** — `scripts/price_check.py`.
   ```

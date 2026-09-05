@@ -2,6 +2,8 @@
 # ============================================================================
 #  retro_check.py  —  SessionStart 훅: 회고가 밀렸으면 세션 시작 시 알림
 # ----------------------------------------------------------------------------
+#  어디서 도나: Claude Code · OpenAI Codex · Gemini CLI · Grok Build 의 SessionStart
+#  (네 도구 모두 같은 stdin/stdout 규약 — inject_memory.py 머리말 참조)
 #  무엇을 하나 (책 "루프 엔지니어링" 장의 실물):
 #    - 세션을 시작할 때 retro/ 안의 가장 최근 회고 날짜를 본다.
 #    - 마지막 회고가 STALE_DAYS 일 넘게 밀렸으면(또는 하나도 없으면),
@@ -41,10 +43,20 @@ def emit(text: str) -> None:
         }
     }
     sys.stdout.write(json.dumps(out, ensure_ascii=False))
+    sys.stdout.flush()
     sys.exit(0)
 
 
+def drain_stdin() -> None:
+    """에이전트가 넘긴 stdin JSON 은 쓰지 않지만, 파이프를 비워 둔다(막힘 방지)."""
+    try:
+        sys.stdin.buffer.read()
+    except Exception:
+        pass
+
+
 def main() -> None:
+    drain_stdin()
     if not RETRO_DIR.is_dir():
         sys.exit(0)
 
