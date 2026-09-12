@@ -47,7 +47,7 @@ Claude 가 "금요일 오후에 `retro/weekly/` 에 남기기로 했었죠"를 *
 > (내부적으로 `python scripts/build_manifest.py` 를 실행합니다.)
 >
 > 더 꼼꼼히 보려면 **"키트 자체검사 돌려줘"** → `python scripts/kit_selfcheck.py`.
-> 문법·설정·훅 실동작(4개 에이전트 규약)·공개 게이트까지 9가지를 한 번에 검사하고 ✅/❌ 로 보여 줍니다.
+> 문법·설정·훅 실동작(4개 에이전트 규약)·공개 게이트·문서 목차까지 10가지를 한 번에 검사하고 ✅/❌ 로 보여 줍니다.
 
 ---
 
@@ -100,7 +100,7 @@ harness-starter-kit/
 │  ├─ price_check.py       ← 호출 비용 계산 (비용 가드)
 │  ├─ decision_track.py    ← 결정 카드 박제·영향 역추적
 │  ├─ sync_agent_docs.py   ← CLAUDE.md → AGENTS.md·GEMINI.md 사본 동기화 (자동 호출)
-│  └─ kit_selfcheck.py     ← 무결성·이식성 자체검사 9종 (받은 그대로 도는가?)
+│  └─ kit_selfcheck.py     ← 무결성·이식성 자체검사 10종 (받은 그대로 도는가?)
 └─ retro/                  ← 일간·주간 회고 (루프의 연료)
 ```
 

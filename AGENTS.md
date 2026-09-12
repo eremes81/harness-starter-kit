@@ -107,5 +107,5 @@ harness-starter-kit/
 
 - `memory/_jit_manifest.json` 과 `memory/_injection_log.txt` 는 **자동 생성물**. 손으로 고치지 말 것.
 - `AGENTS.md` · `GEMINI.md` 도 자동 생성물(이 파일의 사본). 고칠 것은 `CLAUDE.md` 뿐.
-- 받은 그대로 도는지 확인: `python scripts/kit_selfcheck.py` (문법·설정·훅 E2E·공개 게이트 9종).
+- 받은 그대로 도는지 확인: `python scripts/kit_selfcheck.py` (문법·설정·훅 E2E·공개 게이트·문서 목차 10종).
 - 개인정보·회사 기밀을 메모리에 적었다면, 이 폴더를 공개(git push)하기 전에 반드시 점검.

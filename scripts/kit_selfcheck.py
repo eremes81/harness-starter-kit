@@ -14,7 +14,8 @@
 #    6. 자동 블록 : CLAUDE.md 의 "자주 적용되는 규칙" 이 매니페스트 상위와 같은가
 #    7. 공개 게이트: 메일주소·전화번호·개인 홈 경로 등이 섞여 있지 않은가
 #    8. 표준 라이브러리 : 외부 패키지 import 가 문서화된 것 외에 없는가
-#    9. 실행기    : python / python3 중 무엇이 있는가 (정보)
+#    9. 문서 목차  : 번호가 붙은 절(## 1. ...)이 빠짐·중복 없이 이어지는가
+#   10. 실행기    : python / python3 중 무엇이 있는가 (정보)
 #
 #  사용법:
 #    python scripts/kit_selfcheck.py             # 전부 검사, 실패가 있으면 종료코드 1
@@ -308,10 +309,48 @@ def check_stdlib_only() -> None:
         ok("8 표준 라이브러리", f"필수 외부 패키지 없음 (파일 머리에 문서화된 예외 {sum(len(v) for v in DOCUMENTED_EXTERNAL.values())}건 · 선택적 PyYAML 허용)")
 
 
-# 9. 실행기 ------------------------------------------------------------------
+# 9. 문서 목차 ----------------------------------------------------------------
+# 번호가 붙은 절이 있는 문서에서, 같은 수준의 번호가 1씩 이어지는지 / 같은 제목이
+# 두 번 나오지 않는지 본다. 절을 넣고 빼다 보면 번호만 남고 제목이 안 따라오거나,
+# 앞 절과 똑같은 번호·제목이 뒤에 또 생기기 쉽다(사람 눈에는 잘 안 띈다).
+HEADING_NUM = re.compile(r"^(#{2,3})\s+(\d+)\.\s*(.+?)\s*$", re.M)
+
+
+def check_doc_outline() -> None:
+    problems: list[str] = []
+    groups = 0
+    for path in sorted(REPO_ROOT.rglob("*.md")):
+        if not path.is_file() or any(part in GATE_SKIP_DIRS for part in path.parts):
+            continue
+        try:
+            text = path.read_text(encoding="utf-8")
+        except (OSError, UnicodeDecodeError):
+            continue
+        by_level: dict[str, list[tuple[int, str]]] = {}
+        for m in HEADING_NUM.finditer(text):
+            by_level.setdefault(m.group(1), []).append((int(m.group(2)), m.group(3)))
+        for level, items in sorted(by_level.items()):
+            if len(items) < 2:
+                continue          # 번호 절이 하나뿐이면 순서를 따질 게 없다
+            groups += 1
+            nums = [n for n, _ in items]
+            expected = list(range(nums[0], nums[0] + len(nums)))
+            if nums != expected:
+                problems.append(f"{rel(path)} {level} 번호 {nums} → 기대 {expected}")
+            titles = [t for _, t in items]
+            dups = sorted({t for t in titles if titles.count(t) > 1})
+            if dups:
+                problems.append(f"{rel(path)} {level} 제목 중복: " + " / ".join(dups))
+    if problems:
+        fail("9 문서 목차", " | ".join(problems[:4]) + (" …" if len(problems) > 4 else ""))
+    else:
+        ok("9 문서 목차", f"번호 절 {groups}묶음 — 번호 연속 · 제목 중복 0")
+
+
+# 10. 실행기 -----------------------------------------------------------------
 def check_launchers() -> None:
     found = [n for n in ("python", "python3") if shutil.which(n)]
-    info("9 실행기", f"이 PC: {', '.join(found) or '없음'} / 설정은 python → python3 순으로 시도")
+    info("10 실행기", f"이 PC: {', '.join(found) or '없음'} / 설정은 python → python3 순으로 시도")
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -335,6 +374,7 @@ def main(argv: list[str] | None = None) -> int:
     check_hot_block()
     check_public_gate(extra_terms)
     check_stdlib_only()
+    check_doc_outline()
     check_launchers()
 
     width = max(len(r[1]) for r in results)
