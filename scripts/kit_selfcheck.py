@@ -63,7 +63,7 @@ CONFIGS = {
 
 # 외부 패키지 import 가 허용된 파일(파일 머리에 pip install 안내가 있는 것 — 책 「코드 색인」과 일치)
 DOCUMENTED_EXTERNAL = {
-    "6장/card_graph.py": {"networkx"},
+    "2장/card_graph.py": {"networkx"},
     "8장/build_cache.py": {"pandas", "openpyxl"},
 }
 # 있으면 쓰고 없어도 도는 패키지: import 가 try/except 로 감싸져 있어야 통과
